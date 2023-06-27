@@ -1,0 +1,29 @@
+{
+  "name": "server-part",
+  "version": "1.0.0",
+  "description": "",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node src/server.js",
+    "server": "nodemon src/server.js",
+    "dev": "nodemon --watch src src/server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/SergioDiorov/backend-part.git"
+  },
+  "author": "SergioDiorov",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/SergioDiorov/backend-part/issues"
+  },
+  "homepage": "https://github.com/SergioDiorov/backend-part#readme",
+  "dependencies": {
+    "express": "^4.18.2",
+    "mongoose": "^7.3.1"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.22"
+  }
+}
