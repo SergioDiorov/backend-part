@@ -1,10 +1,10 @@
-"use strict";
+'use strict';
 
-const express = require("express");
+const express = require('express');
 const app = express();
 
-app.use("/", (req, res) => {
-  res.status(200).send("test 4");
+app.use('/', (req, res) => {
+  res.status(200).send('test 4');
 });
 
 app.listen(3000);
