@@ -6,7 +6,7 @@ import {
   postNewUser,
   changeUserData,
   deleteUser,
-} from './../controllers/movie-controller';
+} from '../controllers/user-controller';
 
 const router = express.Router();
 
