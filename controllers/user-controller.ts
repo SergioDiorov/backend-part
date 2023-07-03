@@ -1,10 +1,11 @@
 import User from '../models/user';
+import { Request, Response } from 'express';
 
-const handleError = (res: any, error: any) => {
+const handleError = (res: Response, error: unknown) => {
   res.status(500).json({ error });
 };
 
-export const getUsers = async (req: any, res: any) => {
+export const getUsers = async (req: Request, res: Response) => {
   try {
     let users = await User.find();
     res.status(200).json(users);
@@ -13,7 +14,7 @@ export const getUsers = async (req: any, res: any) => {
   }
 };
 
-export const getUserById = async (req: any, res: any) => {
+export const getUserById = async (req: Request, res: Response) => {
   try {
     let user = await User.findById(req.params.id);
     res.status(200).json(user);
@@ -22,7 +23,7 @@ export const getUserById = async (req: any, res: any) => {
   }
 };
 
-export const postNewUser = async (req: any, res: any) => {
+export const postNewUser = async (req: Request, res: Response) => {
   try {
     const user = new User(req.body);
     let result = await user.save();
@@ -32,7 +33,7 @@ export const postNewUser = async (req: any, res: any) => {
   }
 };
 
-export const changeUserData = async (req: any, res: any) => {
+export const changeUserData = async (req: Request, res: Response) => {
   try {
     let result = await User.findByIdAndUpdate(req.params.id, req.body);
     res.status(200).json(result);
@@ -41,7 +42,7 @@ export const changeUserData = async (req: any, res: any) => {
   }
 };
 
-export const deleteUser = async (req: any, res: any) => {
+export const deleteUser = async (req: Request, res: Response) => {
   try {
     let result = await User.findByIdAndDelete(req.params.id);
     res.status(200).json(result);
