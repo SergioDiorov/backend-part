@@ -31,3 +31,25 @@ export const signUpUser = async (req: Request, res: Response) => {
     handleError(res, err);
   }
 };
+
+export const signInUser = async (req: Request, res: Response) => {
+  try {
+    const { email, password } = req.body;
+
+    const userData = await User.findOne({ email });
+    if (!userData) {
+      return res.status(401).json({ code: 401, message: 'Wrong email' });
+    }
+
+    const checkPassword = await bcrypt.compare(password, userData.password);
+    if (!checkPassword) {
+      return res.status(401).json({ code: 401, message: 'Wrong password' });
+    }
+
+    return res
+      .status(200)
+      .json({ code: 200, message: 'SUCCESS', userId: userData._id });
+  } catch (err) {
+    handleError(res, err);
+  }
+};
