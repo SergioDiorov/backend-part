@@ -1,5 +1,6 @@
 import express from 'express';
 import mongoose, { ConnectOptions } from 'mongoose';
+import authRouter from './routes/auth-routes';
 import router from './routes/users-routes';
 
 const PORT = 3000;
@@ -9,6 +10,7 @@ const URL =
 const app = express();
 app.use(express.json());
 app.use(router);
+app.use(authRouter);
 
 mongoose
   .connect(URL, {
@@ -21,3 +23,5 @@ mongoose
 app.listen(PORT, () => {
   console.log(`Listening PORT ${PORT}`);
 });
+
+export default app;

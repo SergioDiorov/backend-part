@@ -15,11 +15,8 @@ const usersSchema = new Schema({
     type: String,
     required: true,
   },
-  personalData: {
-    gender: String,
-    birthDate: String,
-    location: String,
-    phone: Number,
+  admin: {
+    type: Boolean,
   },
 });
 
