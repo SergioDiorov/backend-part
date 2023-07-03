@@ -2,7 +2,7 @@ import { Request, Response } from 'express';
 import User from '../models/user';
 var bcrypt = require('bcrypt');
 
-const handleError = (res: Response, error: any) => {
+const handleError = (res: Response, error: unknown) => {
   res.status(500).json({ error });
 };
 
@@ -16,7 +16,7 @@ export const signUpUser = async (req: Request, res: Response) => {
       const user = new User({
         ...req.body,
         password: hashedPassword,
-        admin: admin === undefined ? false : admin,
+        admin: admin || false,
       });
       let result = await user.save();
       res
