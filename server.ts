@@ -1,16 +1,27 @@
 import express from 'express';
 import mongoose, { ConnectOptions } from 'mongoose';
+import cookieParser from 'cookie-parser';
+import cors from 'cors';
+import 'dotenv/config';
+
 import authRouter from './routes/auth-routes';
 import router from './routes/users-routes';
 
-const PORT = 3000;
-const URL =
-  'mongodb+srv://sergiodiorov:7zGitUx3Krjw1TbJ@cluster0.wd9mxjg.mongodb.net/usersdb?retryWrites=true&w=majority';
+const PORT = process.env.PORT;
+const URL = process.env.DB_URL as string;
 
 const app = express();
 app.use(express.json());
+app.use(cookieParser());
+app.use(
+  cors({
+    credentials: true,
+    origin: process.env.CLIENT_URL,
+  })
+);
+
 app.use(router);
-app.use(authRouter);
+app.use('/authUser', authRouter);
 
 mongoose
   .connect(URL, {
