@@ -35,28 +35,24 @@ export const saveToken = async (userId: ObjectId, refreshToken: string) => {
 };
 
 export const removeToken = async (refreshToken: string) => {
-  const tokenData = await Token.deleteOne({ refreshToken });
-  return tokenData;
+  return await Token.deleteOne({ refreshToken });
 };
 
 export const findToken = async (refreshToken: string) => {
-  const tokenData = await Token.findOne({ refreshToken });
-  return tokenData;
+  return await Token.findOne({ refreshToken });
 };
 
 export const validateAccessToken = (token: string) => {
   try {
-    const decodedData = jwt.verify(token, jwtSecretAccess);
-    return decodedData;
+    return jwt.verify(token, jwtSecretAccess);
   } catch (error) {
     return null;
   }
 };
 
-export const validaterefreshToken = (token: string) => {
+export const validateRefreshToken = (token: string) => {
   try {
-    const decodedData = jwt.verify(token, jwtSecretRefresh);
-    return decodedData;
+    return jwt.verify(token, jwtSecretRefresh);
   } catch (error) {
     return null;
   }

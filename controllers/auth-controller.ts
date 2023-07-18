@@ -6,12 +6,17 @@ import {
   generateTokens,
   saveToken,
   removeToken,
-  validaterefreshToken,
+  validateRefreshToken,
   findToken,
 } from 'service/token-service';
 
-const handleError = (res: Response, error: unknown) => {
+export const handleError = (res: Response, error: unknown) => {
   res.status(500).json({ error });
+};
+
+const cookieOptions = {
+  maxAge: 24 * 60 * 60 * 1000,
+  httpOnly: true,
 };
 
 export const signUpUser = async (req: Request, res: Response) => {
@@ -32,10 +37,7 @@ export const signUpUser = async (req: Request, res: Response) => {
       const userPayload = { email: result.email, id: result._id };
       const tokens = generateTokens(userPayload);
       await saveToken(result._id, tokens.refreshToken);
-      res.cookie('refreshToken', tokens.refreshToken, {
-        maxAge: 24 * 60 * 60 * 1000,
-        httpOnly: true,
-      });
+      res.cookie('refreshToken', tokens.refreshToken, cookieOptions);
 
       return res
         .status(201)
@@ -67,10 +69,7 @@ export const signInUser = async (req: Request, res: Response) => {
     const userPayload = { email: userData.email, id: userData._id };
     const tokens = generateTokens(userPayload);
     await saveToken(userData._id, tokens.refreshToken);
-    res.cookie('refreshToken', tokens.refreshToken, {
-      maxAge: 24 * 60 * 60 * 1000,
-      httpOnly: true,
-    });
+    res.cookie('refreshToken', tokens.refreshToken, cookieOptions);
 
     return res
       .status(200)
@@ -98,7 +97,7 @@ export const refresh = async (req: Request, res: Response) => {
       return res.status(401).json({ code: 401, message: 'Unauthorised user' });
     }
 
-    const decodedData = validaterefreshToken(refreshToken);
+    const decodedData = validateRefreshToken(refreshToken);
     const tokenFromDb = await findToken(refreshToken);
     if (!decodedData || !tokenFromDb || typeof decodedData === 'string') {
       return res.status(401).json({ code: 401, message: 'Unauthorised user' });
@@ -112,10 +111,7 @@ export const refresh = async (req: Request, res: Response) => {
     const userPayload = { email: userData.email, id: userData._id };
     const tokens = generateTokens(userPayload);
     await saveToken(userData._id, tokens.refreshToken);
-    res.cookie('refreshToken', tokens.refreshToken, {
-      maxAge: 24 * 60 * 60 * 1000,
-      httpOnly: true,
-    });
+    res.cookie('refreshToken', tokens.refreshToken, cookieOptions);
 
     return res
       .status(200)

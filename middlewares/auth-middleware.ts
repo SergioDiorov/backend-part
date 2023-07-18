@@ -1,6 +1,7 @@
 import { NextFunction, Request, Response } from 'express';
 import { JwtPayload } from 'jsonwebtoken';
 
+import { handleError } from 'controllers/auth-controller';
 import { validateAccessToken } from 'service/token-service';
 
 interface RequestWithUser extends Request {
@@ -26,7 +27,7 @@ export const authenticateToken = (
     req.user = decodedData as JwtPayload;
 
     next();
-  } catch (error) {
-    return res.status(500).json({ error });
+  } catch (err) {
+    return handleError(res, err);
   }
 };
