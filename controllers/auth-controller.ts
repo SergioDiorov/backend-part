@@ -1,14 +1,14 @@
 import { Request, Response } from 'express';
 var bcrypt = require('bcrypt');
 
-import User from '../models/user';
+import User from 'models/user';
 import {
   generateTokens,
   saveToken,
   removeToken,
   validaterefreshToken,
   findToken,
-} from '../service/token-service';
+} from 'service/token-service';
 
 const handleError = (res: Response, error: unknown) => {
   res.status(500).json({ error });
@@ -19,7 +19,7 @@ export const signUpUser = async (req: Request, res: Response) => {
     const { email, password, admin } = req.body;
     const checkEmail = await User.findOne({ email });
 
-    if (checkEmail === null) {
+    if (!checkEmail) {
       const hashedPassword = await bcrypt.hash(password, 10);
 
       const user = new User({

@@ -1,7 +1,8 @@
 import request from 'supertest';
-import app from './../../server';
-import User from '../../models/user';
-import { generateTokens, saveToken } from './../../service/token-service';
+
+import app from 'server';
+import User from 'models/user';
+import { generateTokens, saveToken } from 'service/token-service';
 
 describe('POST /authUser/signup - registration', () => {
   it('should create a new user when email is not registered', async () => {

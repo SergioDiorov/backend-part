@@ -1,7 +1,7 @@
 import jwt from 'jsonwebtoken';
 import { ObjectId } from 'mongodb';
 
-import Token from './../models/token';
+import Token from 'models/token';
 
 type PayloadType = {
   email: string;

@@ -1,13 +1,13 @@
 import express from 'express';
-import { authenticateToken } from '../middlewares/auth-middleware';
 
+import { authenticateToken } from 'middlewares/auth-middleware';
 import {
   getUsers,
   getUserById,
   postNewUser,
   changeUserData,
   deleteUser,
-} from '../controllers/user-controller';
+} from 'controllers/user-controller';
 
 const router = express.Router();
 

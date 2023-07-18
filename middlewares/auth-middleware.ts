@@ -1,7 +1,7 @@
 import { NextFunction, Request, Response } from 'express';
 import { JwtPayload } from 'jsonwebtoken';
 
-import { validateAccessToken } from '../service/token-service';
+import { validateAccessToken } from 'service/token-service';
 
 interface RequestWithUser extends Request {
   user?: JwtPayload;
