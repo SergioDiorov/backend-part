@@ -9,10 +9,7 @@ import {
   validateRefreshToken,
   findToken,
 } from 'service/token-service';
-
-export const handleError = (res: Response, error: unknown) => {
-  res.status(500).json({ error });
-};
+import { handleError, handleError401, handleError409 } from 'errors/api-error';
 
 const cookieOptions = {
   maxAge: 24 * 60 * 60 * 1000,
@@ -43,9 +40,7 @@ export const signUpUser = async (req: Request, res: Response) => {
         .status(201)
         .json({ code: 201, message: 'SUCCESS', user: userPayload, ...tokens });
     } else {
-      return res
-        .status(409)
-        .json({ code: 409, message: 'Email is already registered' });
+      return handleError409(res, 'Email is already registered');
     }
   } catch (err) {
     handleError(res, err);
@@ -58,12 +53,12 @@ export const signInUser = async (req: Request, res: Response) => {
 
     const userData = await User.findOne({ email });
     if (!userData) {
-      return res.status(401).json({ code: 401, message: 'Wrong email' });
+      return handleError401(res, 'Wrong email');
     }
 
     const checkPassword = await bcrypt.compare(password, userData.password);
     if (!checkPassword) {
-      return res.status(401).json({ code: 401, message: 'Wrong password' });
+      return handleError401(res, 'Wrong password');
     }
 
     const userPayload = { email: userData.email, id: userData._id };
@@ -94,18 +89,18 @@ export const refresh = async (req: Request, res: Response) => {
   try {
     const { refreshToken } = req.cookies;
     if (!refreshToken) {
-      return res.status(401).json({ code: 401, message: 'Unauthorised user' });
+      return handleError401(res, 'Unauthorised user');
     }
 
     const decodedData = validateRefreshToken(refreshToken);
     const tokenFromDb = await findToken(refreshToken);
     if (!decodedData || !tokenFromDb || typeof decodedData === 'string') {
-      return res.status(401).json({ code: 401, message: 'Unauthorised user' });
+      return handleError401(res, 'Unauthorised user');
     }
 
     const userData = await User.findById(decodedData.id);
     if (!userData) {
-      return res.status(401).json({ code: 401, message: 'Unauthorised user' });
+      return handleError401(res, 'Unauthorised user');
     }
 
     const userPayload = { email: userData.email, id: userData._id };
