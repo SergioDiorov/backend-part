@@ -126,11 +126,11 @@ describe('POST /authUser/signin - autorisation', () => {
 
     const response = await request(app).post('/authUser/signin').send(user);
 
+    await User.deleteOne({ _id: signUpUser._id });
+
     expect(response.status).toBe(401);
     expect(response.body.code).toBe(401);
     expect(response.body.message).toBe('Wrong password');
-
-    await User.deleteOne({ _id: signUpUser._id });
   });
 });
 
