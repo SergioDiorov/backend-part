@@ -1,7 +1,7 @@
 import { NextFunction, Request, Response } from 'express';
 import { JwtPayload } from 'jsonwebtoken';
 
-import { handleError, handleError401, handleError403 } from 'errors/api-error';
+import { handleError } from 'errors/api-error';
 import { validateAccessToken } from 'service/token-service';
 
 interface RequestWithUser extends Request {
@@ -17,17 +17,17 @@ export const authenticateToken = (
     const authHeader = req.headers.authorization;
     const accessToken = authHeader && authHeader.split(' ')[1];
     if (!accessToken) {
-      return handleError401(res, 'No token provided');
+      return handleError(res, 401, 'No token provided');
     }
 
     const decodedData = validateAccessToken(accessToken);
     if (!decodedData) {
-      return handleError403(res, 'Invalid token');
+      return handleError(res, 403, 'Invalid token');
     }
     req.user = decodedData as JwtPayload;
 
     next();
   } catch (err) {
-    return handleError(res, err);
+    return handleError(res, 500, err);
   }
 };

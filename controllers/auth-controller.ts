@@ -9,7 +9,7 @@ import {
   validateRefreshToken,
   findToken,
 } from 'service/token-service';
-import { handleError, handleError401, handleError409 } from 'errors/api-error';
+import { handleError } from 'errors/api-error';
 
 const cookieOptions = {
   maxAge: 24 * 60 * 60 * 1000,
@@ -40,10 +40,10 @@ export const signUpUser = async (req: Request, res: Response) => {
         .status(201)
         .json({ code: 201, message: 'SUCCESS', user: userPayload, ...tokens });
     } else {
-      return handleError409(res, 'Email is already registered');
+      return handleError(res, 409, 'Email is already registered');
     }
   } catch (err) {
-    handleError(res, err);
+    handleError(res, 500, err);
   }
 };
 
@@ -53,12 +53,12 @@ export const signInUser = async (req: Request, res: Response) => {
 
     const userData = await User.findOne({ email });
     if (!userData) {
-      return handleError401(res, 'Wrong email');
+      return handleError(res, 401, 'Wrong email');
     }
 
     const checkPassword = await bcrypt.compare(password, userData.password);
     if (!checkPassword) {
-      return handleError401(res, 'Wrong password');
+      return handleError(res, 401, 'Wrong password');
     }
 
     const userPayload = { email: userData.email, id: userData._id };
@@ -70,7 +70,7 @@ export const signInUser = async (req: Request, res: Response) => {
       .status(200)
       .json({ code: 200, message: 'SUCCESS', user: userPayload, ...tokens });
   } catch (err) {
-    handleError(res, err);
+    handleError(res, 500, err);
   }
 };
 
@@ -81,7 +81,7 @@ export const signOut = async (req: Request, res: Response) => {
     res.clearCookie('refreshToken');
     return res.status(200).json({ code: 200, message: 'SUCCESS', token });
   } catch (err) {
-    handleError(res, err);
+    handleError(res, 500, err);
   }
 };
 
@@ -89,18 +89,18 @@ export const refresh = async (req: Request, res: Response) => {
   try {
     const { refreshToken } = req.cookies;
     if (!refreshToken) {
-      return handleError401(res, 'Unauthorised user');
+      return handleError(res, 401, 'Unauthorised user');
     }
 
     const decodedData = validateRefreshToken(refreshToken);
     const tokenFromDb = await findToken(refreshToken);
     if (!decodedData || !tokenFromDb || typeof decodedData === 'string') {
-      return handleError401(res, 'Unauthorised user');
+      return handleError(res, 401, 'Unauthorised user');
     }
 
     const userData = await User.findById(decodedData.id);
     if (!userData) {
-      return handleError401(res, 'Unauthorised user');
+      return handleError(res, 401, 'Unauthorised user');
     }
 
     const userPayload = { email: userData.email, id: userData._id };
@@ -112,6 +112,6 @@ export const refresh = async (req: Request, res: Response) => {
       .status(200)
       .json({ code: 200, message: 'SUCCESS', user: userPayload, ...tokens });
   } catch (err) {
-    handleError(res, err);
+    handleError(res, 500, err);
   }
 };
