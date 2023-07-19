@@ -1,5 +1,6 @@
-import User from '../models/user';
 import { Request, Response } from 'express';
+
+import User from 'models/user';
 
 const handleError = (res: Response, error: unknown) => {
   res.status(500).json({ error });
