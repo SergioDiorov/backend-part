@@ -1,10 +1,25 @@
 import request from 'supertest';
 import mongoose from 'mongoose';
+import { Server } from 'http';
 
 import app from 'server';
 import User from 'models/user';
 import { generateTokens, saveToken } from 'service/token-service';
 import * as tokenService from 'service/token-service';
+
+let server: Server;
+
+beforeAll((done) => {
+  server = app.listen(() => {
+    done();
+  });
+});
+
+afterAll((done) => {
+  server.close(() => {
+    done();
+  });
+});
 
 describe('POST /authUser/signup - registration', () => {
   it('should create a new user when email is not registered', async () => {
