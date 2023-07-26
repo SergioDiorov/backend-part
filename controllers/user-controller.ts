@@ -1,53 +1,53 @@
 import { Request, Response } from 'express';
 
 import User from 'models/user';
-
-const handleError = (res: Response, error: unknown) => {
-  res.status(500).json({ error });
-};
+import { handleError } from 'errors/api-error';
 
 export const getUsers = async (req: Request, res: Response) => {
   try {
-    let users = await User.find();
-    res.status(200).json(users);
+    const users = await User.find(
+      {},
+      { userName: 1, email: 1, admin: 1, _id: 1 }
+    );
+
+    res.status(200).json({ message: 'SUCCESS', users });
   } catch (err) {
-    handleError(res, err);
+    return handleError(res, 500, err);
   }
 };
 
 export const getUserById = async (req: Request, res: Response) => {
   try {
-    let user = await User.findById(req.params.id);
-    res.status(200).json(user);
-  } catch (err) {
-    handleError(res, err);
-  }
-};
+    const user = await User.findById(req.params.id).select(
+      'userName email admin _id'
+    );
 
-export const postNewUser = async (req: Request, res: Response) => {
-  try {
-    const user = new User(req.body);
-    let result = await user.save();
-    res.status(201).json(result);
+    res.status(200).json({ message: 'SUCCESS', user });
   } catch (err) {
-    handleError(res, err);
+    return handleError(res, 500, err);
   }
 };
 
 export const changeUserData = async (req: Request, res: Response) => {
   try {
-    let result = await User.findByIdAndUpdate(req.params.id, req.body);
-    res.status(200).json(result);
+    const user = await User.findByIdAndUpdate(req.params.id, req.body, {
+      new: true,
+    }).select('userName email admin _id');
+
+    res.status(200).json({ message: 'SUCCESS', user });
   } catch (err) {
-    handleError(res, err);
+    return handleError(res, 500, err);
   }
 };
 
 export const deleteUser = async (req: Request, res: Response) => {
   try {
-    let result = await User.findByIdAndDelete(req.params.id);
-    res.status(200).json(result);
+    const user = await User.findByIdAndDelete(req.params.id).select(
+      'userName email admin _id'
+    );
+
+    res.status(200).json({ message: 'SUCCESS', user });
   } catch (err) {
-    handleError(res, err);
+    return handleError(res, 500, err);
   }
 };

@@ -20,7 +20,7 @@ app.use(
   })
 );
 
-app.use(router);
+app.use('/users', router);
 app.use('/authUser', authRouter);
 
 mongoose
