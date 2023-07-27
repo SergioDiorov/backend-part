@@ -34,20 +34,20 @@ describe('GET /users', () => {
         userName: 'user1',
         email: 'user1@fake.com',
         password: 'password1',
-        admin: false,
+        isAdmin: false,
       },
       {
         userName: 'user2',
         email: 'user2@fake.com',
         password: 'password2',
-        admin: false,
+        isAdmin: false,
       },
     ];
 
-    const fakeUsersToExpect = fakeUsers.map(({ userName, email, admin }) => ({
+    const fakeUsersToExpect = fakeUsers.map(({ userName, email, isAdmin }) => ({
       userName,
       email,
-      admin,
+      isAdmin,
     }));
 
     await User.insertMany(fakeUsers);
@@ -99,7 +99,7 @@ describe('GET /users/:id', () => {
     expect(response.body.message).toBe('SUCCESS');
     expect(response.body.user.userName).toBe(fakeUser.userName);
     expect(response.body.user.email).toBe(fakeUser.email);
-    expect(response.body.user.admin).toBeFalsy();
+    expect(response.body.user.isAdmin).toBeFalsy();
     expect(response.body.user.password).toBeUndefined();
   });
 

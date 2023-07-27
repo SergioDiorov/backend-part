@@ -27,7 +27,7 @@ describe('POST /authUser/signup - registration', () => {
       userName: 'Test1',
       email: 'testSignUp1@gmail.com',
       password: 'qweasd',
-      admin: false,
+      isAdmin: false,
     };
 
     const response = await request(app).post('/authUser/signup').send(user);
@@ -47,14 +47,14 @@ describe('POST /authUser/signup - registration', () => {
       userName: 'Test2',
       email: 'testSignUp2@gmail.com',
       password: 'qweasd',
-      admin: false,
+      isAdmin: false,
     });
 
     const existingUser = {
       userName: 'Test2',
       email: 'testSignUp2@gmail.com',
       password: 'qweasd',
-      admin: false,
+      isAdmin: false,
     };
 
     const response = await request(app)
@@ -68,7 +68,7 @@ describe('POST /authUser/signup - registration', () => {
     expect(response.body.message).toBe('Email is already registered');
   });
 
-  it('should create a new user when admin is not in arguments', async () => {
+  it('should create a new user when isAdmin is not in arguments', async () => {
     const user = {
       userName: 'Test3',
       email: 'testSignUp3@gmail.com',
@@ -99,7 +99,7 @@ describe('POST /authUser/signin - autorisation', () => {
       userName: 'fakeUserSignIn1',
       email: 'testSignIn1@gmail.com',
       password: 'qweasd',
-      admin: false,
+      isAdmin: false,
     });
 
     const response = await request(app).post('/authUser/signin').send(user);
@@ -169,7 +169,7 @@ describe('POST /authUser/signout', () => {
       userName: 'fakeSignOut2',
       email: 'fakeUserSignOut2@gmail.com',
       password: 'qwerty',
-      admin: false,
+      isAdmin: false,
     });
 
     const fakeTokens = generateTokens({

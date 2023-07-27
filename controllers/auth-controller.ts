@@ -18,7 +18,7 @@ const cookieOptions = {
 
 export const signUpUser = async (req: Request, res: Response) => {
   try {
-    const { email, password, admin } = req.body;
+    const { email, password, isAdmin } = req.body;
     const checkEmail = await User.findOne({ email });
 
     if (!checkEmail) {
@@ -27,7 +27,7 @@ export const signUpUser = async (req: Request, res: Response) => {
       const user = new User({
         ...req.body,
         password: hashedPassword,
-        admin: admin || false,
+        isAdmin: isAdmin || false,
       });
       const result = await user.save();
 
