@@ -1,5 +1,4 @@
 import request from 'supertest';
-import { ObjectId } from 'mongodb';
 import { Server } from 'http';
 
 import app from 'server';
@@ -7,17 +6,10 @@ import User from 'models/user';
 import * as tokenService from 'service/token-service';
 
 let server: Server;
-const fakeToken = 'fake-token';
 
 beforeAll((done) => {
   server = app.listen(() => {
     done();
-  });
-
-  const tokenServiceMock = jest.spyOn(tokenService, 'validateAccessToken');
-  tokenServiceMock.mockReturnValue({
-    email: 'user1@fake.com',
-    id: new ObjectId(),
   });
 });
 
@@ -34,13 +26,13 @@ describe('GET /users', () => {
         userName: 'user1',
         email: 'user1@fake.com',
         password: 'password1',
-        isAdmin: false,
+        isAdmin: true,
       },
       {
         userName: 'user2',
         email: 'user2@fake.com',
         password: 'password2',
-        isAdmin: false,
+        isAdmin: true,
       },
     ];
 
@@ -50,10 +42,17 @@ describe('GET /users', () => {
       isAdmin,
     }));
 
-    await User.insertMany(fakeUsers);
+    let userData = await User.create(fakeUsers[0]);
+    await User.create(fakeUsers[1]);
+
+    const tokens = tokenService.generateTokens({
+      email: userData.email,
+      id: userData._id,
+    });
+
     const response = await request(app)
       .get('/users')
-      .set('Authorization', `Bearer ${fakeToken}`);
+      .set('Authorization', `Bearer ${tokens.accessToken}`);
 
     const usersToDelete = await User.find({
       userName: { $in: ['user1', 'user2'] },
@@ -63,8 +62,8 @@ describe('GET /users', () => {
       _id: { $in: usersToDelete.map((user) => user._id) },
     });
 
-    expect(response.status).toBe(200);
     expect(response.body.message).toBe('SUCCESS');
+    expect(response.status).toBe(200);
     expect(response.body.users).toEqual(
       expect.arrayContaining(
         fakeUsersToExpect.map((user) => expect.objectContaining(user))
@@ -83,15 +82,20 @@ describe('GET /users', () => {
 describe('GET /users/:id', () => {
   it('should get a user by id', async () => {
     const fakeUser = {
-      userName: 'user1',
+      userName: 'userById',
       email: 'getUserById@test.com',
-      password: 'password1',
+      password: 'password',
     };
     const savedUser = await User.create(fakeUser);
 
+    const tokens = tokenService.generateTokens({
+      email: savedUser.email,
+      id: savedUser._id,
+    });
+
     const response = await request(app)
       .get(`/users/${savedUser._id}`)
-      .set('Authorization', `Bearer ${fakeToken}`);
+      .set('Authorization', `Bearer ${tokens.accessToken}`);
 
     await User.deleteOne({ _id: response.body.user._id });
 
@@ -104,10 +108,21 @@ describe('GET /users/:id', () => {
   });
 
   it('should return 500 and error message if user with id is not found', async () => {
+    const savedUser = await User.create({
+      userName: 'userInvalidId',
+      email: 'getUserByInvalidId@test.com',
+      password: 'password2',
+    });
+
+    const tokens = tokenService.generateTokens({
+      email: savedUser.email,
+      id: savedUser._id,
+    });
     const response = await request(app)
       .get('/users/invalid_id')
-      .set('Authorization', `Bearer ${fakeToken}`);
+      .set('Authorization', `Bearer ${tokens.accessToken}`);
 
+    await User.deleteOne({ _id: savedUser._id });
     expect(response.status).toBe(500);
     expect(response.body.message).toBeDefined();
   });
@@ -126,6 +141,7 @@ describe('PATCH /users/:id', () => {
       userName: 'userPatch',
       email: 'userPatch@test.com',
       password: 'password1',
+      isAdmin: true,
     };
     const savedUser = await User.create(fakeUser);
     const updatedData = {
@@ -133,9 +149,14 @@ describe('PATCH /users/:id', () => {
       email: 'updatedPatch@test.com',
     };
 
+    const tokens = tokenService.generateTokens({
+      email: savedUser.email,
+      id: savedUser._id,
+    });
+
     const response = await request(app)
       .patch(`/users/${savedUser._id}`)
-      .set('Authorization', `Bearer ${fakeToken}`)
+      .set('Authorization', `Bearer ${tokens.accessToken}`)
       .send(updatedData);
 
     await User.deleteOne({ _id: response.body.user._id });
@@ -148,10 +169,24 @@ describe('PATCH /users/:id', () => {
   });
 
   it('should return 500 and error message if user with id is not found', async () => {
+    const savedUser = await User.create({
+      userName: 'userInvalidId',
+      email: 'getUserByInvalidId@test.com',
+      password: 'password',
+      isAdmin: true,
+    });
+
+    const tokens = tokenService.generateTokens({
+      email: savedUser.email,
+      id: savedUser._id,
+    });
+
     const response = await request(app)
       .patch('/users/invalid_id')
-      .set('Authorization', `Bearer ${fakeToken}`)
+      .set('Authorization', `Bearer ${tokens.accessToken}`)
       .send({});
+
+    await User.deleteOne({ _id: savedUser._id });
 
     expect(response.status).toBe(500);
     expect(response.body.message).toBeDefined();
@@ -168,15 +203,21 @@ describe('PATCH /users/:id', () => {
 describe('DELETE /users/:id', () => {
   it('should delete a user by id', async () => {
     const fakeUser = {
-      userName: 'user1',
-      email: 'user1@example.com',
-      password: 'password1',
+      userName: 'userDelete',
+      email: 'userDelete@test.com',
+      password: 'password',
+      isAdmin: true,
     };
     const savedUser = await User.create(fakeUser);
 
+    const tokens = tokenService.generateTokens({
+      email: savedUser.email,
+      id: savedUser._id,
+    });
+
     const response = await request(app)
       .delete(`/users/${savedUser._id}`)
-      .set('Authorization', `Bearer ${fakeToken}`);
+      .set('Authorization', `Bearer ${tokens.accessToken}`);
 
     expect(response.status).toBe(200);
     expect(response.body.message).toBe('SUCCESS');
@@ -189,9 +230,23 @@ describe('DELETE /users/:id', () => {
   });
 
   it('should return 500 if user with id is not found', async () => {
+    const savedUser = await User.create({
+      userName: 'userDeleteError',
+      email: 'userDeleteError@test.com',
+      password: 'password',
+      isAdmin: true,
+    });
+
+    const tokens = tokenService.generateTokens({
+      email: savedUser.email,
+      id: savedUser._id,
+    });
+
     const response = await request(app)
       .delete('/users/invalid_id')
-      .set('Authorization', `Bearer ${fakeToken}`);
+      .set('Authorization', `Bearer ${tokens.accessToken}`);
+
+    await User.deleteOne({ _id: savedUser._id });
 
     expect(response.status).toBe(500);
     expect(response.body.message).toBeDefined();

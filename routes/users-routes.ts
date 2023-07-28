@@ -7,12 +7,13 @@ import {
   changeUserData,
   deleteUser,
 } from 'controllers/user-controller';
+import { checkAdmin } from 'middlewares/check-admin-middleware';
 
 const router = express.Router();
 
-router.get('', authenticateToken, getUsers);
+router.get('', authenticateToken, checkAdmin, getUsers);
 router.get('/:id', authenticateToken, getUserById);
-router.patch('/:id', authenticateToken, changeUserData);
-router.delete('/:id', authenticateToken, deleteUser);
+router.patch('/:id', authenticateToken, checkAdmin, changeUserData);
+router.delete('/:id', authenticateToken, checkAdmin, deleteUser);
 
 export default router;
