@@ -35,7 +35,7 @@ afterAll((done) => {
 });
 
 describe("Check admin middleware", () => {
-  it('should return "No user data provided" error if user is not admin', async () => {
+  it('should return "No user data provided" error if user id is not proveded', async () => {
     const expectedResponse = {
       message: "No user data provided",
       code: 403
@@ -63,7 +63,7 @@ describe("Check admin middleware", () => {
     expect(mockResponse.json).toBeCalledWith(expectedResponse);
   });
 
-  it('should return success', async () => {
+  it('should call next function one time when provided proper user id', async () => {
     mockRequest = {
       user: {
         id: "64b1653b2e6c7d54e2694eea"
