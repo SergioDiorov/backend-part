@@ -16,15 +16,15 @@ export const getProfiles = async (req: Request, res: Response) => {
 
 export const addProfile = async (req: Request, res: Response) => {
   try {
-    const profile = new Profile({
+    const profileToSave = new Profile({
       ...req.body,
       user: req.params.userId
     });
-    const savedProfile = await profile.save();
+    const profile = await profileToSave.save();
 
     return res
       .status(201)
-      .json({ code: 201, message: 'SUCCESS', savedProfile });
+      .json({ code: 201, message: 'SUCCESS', profile });
   } catch (err) {
     return handleError(res, 500, err);
   }
