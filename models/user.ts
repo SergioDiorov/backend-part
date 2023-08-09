@@ -20,6 +20,14 @@ const usersSchema = new Schema({
     type: Boolean,
     default: false,
   },
+  profileCount: {
+    type: Number,
+    default: false,
+  },
+  profiles: [{
+    type: Schema.Types.ObjectId,
+    ref: 'Profile',
+  }],
 });
 
 const User = mongoose.model('User', usersSchema);
