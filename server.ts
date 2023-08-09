@@ -4,8 +4,9 @@ import cookieParser from 'cookie-parser';
 import cors from 'cors';
 import 'dotenv/config';
 
-import authRouter from 'routes/auth-routes';
 import router from 'routes/users-routes';
+import authRouter from 'routes/auth-routes';
+import profilesRouter from 'routes/profiles-routes';
 
 const PORT = process.env.PORT;
 const URL = process.env.DB_URL as string;
@@ -22,6 +23,7 @@ app.use(
 
 app.use('/users', router);
 app.use('/authUser', authRouter);
+app.use('/profiles', profilesRouter);
 
 mongoose
   .connect(URL, {
