@@ -2,17 +2,41 @@ import { Request, Response } from 'express';
 
 import User from 'models/user';
 import { handleError } from 'errors/api-error';
-import Profile from 'models/profile';
 
 export const getUsers = async (req: Request, res: Response) => {
   try {
-    const users = await User.find()
-      .populate('profiles')
-      .select('_id userName email isAdmin')
-      .lean();
-    for (const user of users) {
-      user.profileCount = await Profile.countDocuments({ user: user._id });
-    }
+    const users = await User.aggregate([
+      {
+        $project: {
+          _id: 1,
+          userName: 1,
+          email: 1,
+          isAdmin: 1,
+        },
+      },
+      {
+        $lookup: {
+          from: 'profiles',
+          localField: '_id',
+          foreignField: 'user',
+          as: 'profiles',
+        },
+      },
+      {
+        $addFields: {
+          profileCount: { $size: '$profiles' },
+        },
+      },
+      {
+        $project: {
+          _id: 1,
+          userName: 1,
+          email: 1,
+          isAdmin: 1,
+          profileCount: 1,
+        },
+      },
+    ]);
 
     res.status(200).json({ message: 'SUCCESS', users });
   } catch (err) {

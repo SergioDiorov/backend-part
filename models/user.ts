@@ -22,7 +22,7 @@ const usersSchema = new Schema({
   },
   profileCount: {
     type: Number,
-    default: false,
+    default: 0,
   },
   profiles: [{
     type: Schema.Types.ObjectId,
