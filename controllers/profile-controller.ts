@@ -21,7 +21,7 @@ export const getProfileByName = async (req: Request, res: Response) => {
 
     const searchResults = await Profile.find({ user: userId, name: { $regex: profileName, $options: 'i' } }).lean();
     if (!searchResults.length) {
-      return handleError(res, 401, 'No profiles found with this name');
+      return handleError(res, 404, 'No profiles found with this name');
     }
 
     return res
@@ -59,7 +59,7 @@ export const getProfilesByCountry = async (req: Request, res: Response) => {
 
     const searchResults = await Profile.find({ user: userId, "location.country": { $regex: new RegExp(`^${country}$`, 'i') } }).lean();
     if (!searchResults.length) {
-      return handleError(res, 401, 'No profiles found with this country')
+      return handleError(res, 404, 'No profiles found with this country')
     }
 
     return res
@@ -77,7 +77,7 @@ export const getProfilesByCity = async (req: Request, res: Response) => {
 
     const searchResults = await Profile.find({ user: userId, "location.city": { $regex: new RegExp(`^${city}$`, 'i') } }).lean();
     if (!searchResults.length) {
-      return handleError(res, 401, 'No profiles found with this city')
+      return handleError(res, 404, 'No profiles found with this city')
     }
 
     return res
@@ -109,7 +109,7 @@ export const getCountriesList = async (req: Request, res: Response) => {
 export const getCitiesList = async (req: Request, res: Response) => {
   try {
     const userId = req.params.userId;
-    const city = req.query.country;
+    const city = req.query.city;
 
     const matchingCountries = await Profile.distinct('location.city', {
       user: userId,
