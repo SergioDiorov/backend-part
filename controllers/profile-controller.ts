@@ -14,6 +14,116 @@ export const getProfiles = async (req: Request, res: Response) => {
   }
 };
 
+export const getProfileByName = async (req: Request, res: Response) => {
+  try {
+    const userId = req.params.userId;
+    const profileName = req.query.profileName;
+
+    const searchResults = await Profile.find({ user: userId, name: { $regex: profileName, $options: 'i' } }).lean();
+    if (!searchResults.length) {
+      return handleError(res, 404, 'No profiles found with this name');
+    }
+
+    return res
+      .status(200)
+      .json({ code: 200, message: 'SUCCESS', profiles: searchResults });
+  } catch (err) {
+    return handleError(res, 500, err);
+  }
+};
+
+export const getAdultProfiles = async (req: Request, res: Response) => {
+  try {
+    const userId = req.params.userId;
+    const today = new Date();
+    const adultDate = new Date(today.getFullYear() - 18, today.getMonth(), today.getDate());
+    adultDate.toISOString().split('T')[0]
+
+    const adultUsers = await Profile.find({
+      user: userId,
+      birthDate: { $lte: new Date(adultDate) }
+    });
+
+    return res
+      .status(200)
+      .json({ code: 200, message: 'SUCCESS', profiles: adultUsers });
+  } catch (err) {
+    return handleError(res, 500, err);
+  }
+};
+
+export const getProfilesByCountry = async (req: Request, res: Response) => {
+  try {
+    const userId = req.params.userId;
+    const country = req.params.country;
+
+    const searchResults = await Profile.find({ user: userId, "location.country": { $regex: new RegExp(`^${country}$`, 'i') } }).lean();
+    if (!searchResults.length) {
+      return handleError(res, 404, 'No profiles found with this country')
+    }
+
+    return res
+      .status(200)
+      .json({ code: 200, message: 'SUCCESS', profiles: searchResults });
+  } catch (err) {
+    return handleError(res, 500, err);
+  }
+};
+
+export const getProfilesByCity = async (req: Request, res: Response) => {
+  try {
+    const userId = req.params.userId;
+    const city = req.params.city;
+
+    const searchResults = await Profile.find({ user: userId, "location.city": { $regex: new RegExp(`^${city}$`, 'i') } }).lean();
+    if (!searchResults.length) {
+      return handleError(res, 404, 'No profiles found with this city')
+    }
+
+    return res
+      .status(200)
+      .json({ code: 200, message: 'SUCCESS', profiles: searchResults });
+  } catch (err) {
+    return handleError(res, 500, err);
+  }
+};
+
+export const getCountriesList = async (req: Request, res: Response) => {
+  try {
+    const userId = req.params.userId;
+    const country = req.query.country;
+
+    const matchingCountries = await Profile.distinct('location.country', {
+      user: userId,
+      'location.country': { $regex: country, $options: 'i' }
+    });
+
+    return res
+      .status(200)
+      .json({ code: 200, message: 'SUCCESS', searchList: matchingCountries });
+  } catch (err) {
+    return handleError(res, 500, err);
+  }
+};
+
+export const getCitiesList = async (req: Request, res: Response) => {
+  try {
+    const userId = req.params.userId;
+    const city = req.query.city;
+
+    const matchingCountries = await Profile.distinct('location.city', {
+      user: userId,
+      'location.city': { $regex: city, $options: 'i' }
+    });
+
+    return res
+      .status(200)
+      .json({ code: 200, message: 'SUCCESS', searchList: matchingCountries });
+  } catch (err) {
+    return handleError(res, 500, err);
+  }
+};
+
 export const addProfile = async (req: Request, res: Response) => {
   try {
     const profileToSave = new Profile({
