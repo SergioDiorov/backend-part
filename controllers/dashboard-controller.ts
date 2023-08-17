@@ -4,7 +4,6 @@ import User from 'models/user';
 import Profile from 'models/profile';
 import { handleError } from 'errors/api-error';
 
-
 export const getDashboardInfo = async (req: Request, res: Response) => {
   try {
     const today = new Date();
