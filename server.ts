@@ -2,6 +2,7 @@ import express from 'express';
 import mongoose, { ConnectOptions } from 'mongoose';
 import cookieParser from 'cookie-parser';
 import cors from 'cors';
+import path from 'path';
 import 'dotenv/config';
 
 import router from 'routes/users-routes';
@@ -14,6 +15,7 @@ const URL = process.env.DB_URL as string;
 
 const app = express();
 app.use(express.json());
+app.use('/static/uploads', express.static(path.join(__dirname, 'static/uploads')));
 app.use(cookieParser());
 app.use(
   cors({

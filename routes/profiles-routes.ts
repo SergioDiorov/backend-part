@@ -1,6 +1,7 @@
 import express from 'express';
 
 import { authenticateToken } from 'middlewares/auth-middleware';
+import { fileMiddleware } from 'middlewares/fileUpload';
 import {
   getProfiles,
   getProfileByName,
@@ -23,8 +24,8 @@ profilesRouter.get('/searchByCity/:userId/:city', authenticateToken, getProfiles
 profilesRouter.get('/searchAdults/:userId', authenticateToken, getAdultProfiles);
 profilesRouter.get('/searchCountriesList/:userId', authenticateToken, getCountriesList);
 profilesRouter.get('/searchCitiesList/:userId', authenticateToken, getCitiesList);
-profilesRouter.post('/:userId', authenticateToken, addProfile);
-profilesRouter.patch('/:profileId', authenticateToken, changeProfileData);
+profilesRouter.post('/:userId', authenticateToken, fileMiddleware.single("file"), addProfile);
+profilesRouter.patch('/:profileId', authenticateToken, fileMiddleware.single("file"), changeProfileData);
 profilesRouter.delete('/:profileId', authenticateToken, deleteProfile);
 
 export default profilesRouter;

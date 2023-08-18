@@ -8,6 +8,16 @@ const profileSchema = new Schema({
     ref: 'User',
     required: true,
   },
+  photo: {
+    type: String,
+    required: false,
+    validate: {
+      validator: function (value: any) {
+        return value === null || typeof value === 'string';
+      },
+      message: 'Invalid photo value',
+    },
+  },
   name: {
     type: String,
     required: true,
