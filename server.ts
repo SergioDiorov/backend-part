@@ -7,6 +7,7 @@ import 'dotenv/config';
 import router from 'routes/users-routes';
 import authRouter from 'routes/auth-routes';
 import profilesRouter from 'routes/profiles-routes';
+import dashboardRouter from 'routes/dashboard-routes';
 
 const PORT = process.env.PORT;
 const URL = process.env.DB_URL as string;
@@ -24,6 +25,7 @@ app.use(
 app.use('/users', router);
 app.use('/authUser', authRouter);
 app.use('/profiles', profilesRouter);
+app.use('/dashboard', dashboardRouter);
 
 mongoose
   .connect(URL, {
