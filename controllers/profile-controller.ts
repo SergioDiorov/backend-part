@@ -148,8 +148,7 @@ export const addProfile = async (req: Request, res: Response) => {
 
 export const changeProfileData = async (req: Request, res: Response) => {
   try {
-    const file = req.file?.filename ? req.file.filename : null;
-    console.log(file);
+    const file = req.file?.filename || null;
 
     if (file) {
       req.body.photo = file;
