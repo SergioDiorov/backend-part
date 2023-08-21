@@ -128,7 +128,7 @@ export const getCitiesList = async (req: Request, res: Response) => {
 
 export const addProfile = async (req: Request, res: Response) => {
   try {
-    const file = req.file?.filename ? req.file.filename : null;
+    const file = req.file?.filename || null;
 
     const profileToSave = new Profile({
       ...req.body,
