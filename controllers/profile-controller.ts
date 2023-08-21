@@ -1,4 +1,6 @@
 import { Request, Response } from 'express';
+import path from 'path';
+import fs from 'fs';
 
 import Profile from 'models/profile';
 import { handleError } from 'errors/api-error';
@@ -126,10 +128,14 @@ export const getCitiesList = async (req: Request, res: Response) => {
 
 export const addProfile = async (req: Request, res: Response) => {
   try {
+    const file = req.file?.filename || null;
+
     const profileToSave = new Profile({
       ...req.body,
-      user: req.params.userId
+      user: req.params.userId,
+      photo: file,
     });
+
     const profile = await profileToSave.save();
 
     return res
@@ -142,6 +148,14 @@ export const addProfile = async (req: Request, res: Response) => {
 
 export const changeProfileData = async (req: Request, res: Response) => {
   try {
+    const file = req.file?.filename || null;
+
+    if (file) {
+      req.body.photo = file;
+      const oldProfile = await Profile.findById(req.params.profileId);
+      oldProfile?.photo && fs.unlinkSync(path.join(__dirname, '..', 'static', 'uploads', oldProfile.photo));
+    }
+
     const profile = await Profile.findByIdAndUpdate(req.params.profileId, req.body, { new: true });
     res.status(200).json({ message: 'SUCCESS', profile });
   } catch (err) {
@@ -152,6 +166,11 @@ export const changeProfileData = async (req: Request, res: Response) => {
 export const deleteProfile = async (req: Request, res: Response) => {
   try {
     const profile = await Profile.findByIdAndDelete(req.params.profileId);
+
+    if (profile?.photo) {
+      fs.unlinkSync(path.join(__dirname, '..', 'static', 'uploads', profile.photo));
+    }
+
     res.status(200).json({ message: 'SUCCESS', profile });
   } catch (err) {
     return handleError(res, 500, err);
