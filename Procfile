@@ -1,1 +1,1 @@
-worker: npm start
+web: npm run tsBuild && node ./build/server.js

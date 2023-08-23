@@ -5,14 +5,12 @@
   "main": "server.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "nodeStart": "node server.js",
+    "start": "node server.js",
     "server": "nodemon server.ts",
-    "devNodemon": "nodemon --watch src server.ts",
+    "dev": "nodemon --watch src server.ts",
     "tsWatch": "npx tsc -w",
-    "testJest": "jest --runInBand",
-    "dev": "tsc && node build/server.js",
-    "start": "node build/server.js",
-    "postinstall": "tsc"
+    "tsBuild": "npx tsc",
+    "testJest": "jest --runInBand"
   },
   "repository": {
     "type": "git",
