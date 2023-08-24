@@ -10,7 +10,7 @@ import authRouter from 'routes/auth-routes';
 import profilesRouter from 'routes/profiles-routes';
 import dashboardRouter from 'routes/dashboard-routes';
 
-const PORT = process.env.PORT;
+const PORT = process.env.PORT || 3000;
 const URL = process.env.DB_URL as string;
 
 const app = express();
