@@ -9,7 +9,6 @@
     "server": "nodemon server.ts",
     "dev": "nodemon --watch src server.ts",
     "tsWatch": "npx tsc -w",
-    "tsBuild": "npx tsc",
     "testJest": "jest --runInBand"
   },
   "repository": {
