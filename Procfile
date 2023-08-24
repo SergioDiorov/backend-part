@@ -1,1 +1,1 @@
-worker: npm build
+worker: ./build/server.js
