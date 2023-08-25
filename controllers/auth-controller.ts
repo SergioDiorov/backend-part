@@ -1,4 +1,4 @@
-import { Request, Response } from 'express';
+import { CookieOptions, Request, Response } from 'express';
 var bcrypt = require('bcrypt');
 
 import User from 'models/user';
@@ -11,10 +11,11 @@ import {
 } from 'service/token-service';
 import { handleError } from 'errors/api-error';
 
-const cookieOptions = {
+const cookieOptions: CookieOptions = {
   maxAge: 24 * 60 * 60 * 1000,
   httpOnly: true,
-  secure: true
+  secure: true,
+  sameSite: 'none',
 };
 
 export const signUpUser = async (req: Request, res: Response) => {
