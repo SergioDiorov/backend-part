@@ -14,6 +14,7 @@ import { handleError } from 'errors/api-error';
 const cookieOptions = {
   maxAge: 24 * 60 * 60 * 1000,
   httpOnly: true,
+  secure: true
 };
 
 export const signUpUser = async (req: Request, res: Response) => {
