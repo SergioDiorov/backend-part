@@ -16,6 +16,7 @@ const cookieOptions: CookieOptions = {
   httpOnly: true,
   secure: true,
   sameSite: 'none',
+  domain: process.env.COOKIES_DOMAIN,
 };
 
 export const signUpUser = async (req: Request, res: Response) => {
