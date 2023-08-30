@@ -28,6 +28,7 @@
     "@types/jsonwebtoken": "^9.0.2",
     "@types/supertest": "^2.0.12",
     "@types/uuid": "^9.0.2",
+    "aws-sdk": "^2.1446.0",
     "bcrypt": "^5.1.0",
     "cookie-parser": "^1.4.6",
     "cors": "^2.8.5",

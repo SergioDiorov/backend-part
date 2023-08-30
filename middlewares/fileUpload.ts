@@ -3,9 +3,6 @@ import multer, { FileFilterCallback, Multer } from 'multer';
 import { v4 as uuidv4 } from 'uuid';
 
 const storage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    cb(null, 'static/uploads');
-  },
   filename: (req, file, cb) => {
     const uniqueName = uuidv4();
     cb(null, file.fieldname + '-' + uniqueName + '.jpg');
