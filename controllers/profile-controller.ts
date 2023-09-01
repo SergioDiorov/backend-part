@@ -1,9 +1,8 @@
 import { Request, Response } from 'express';
-import path from 'path';
-import fs from 'fs';
 
 import Profile from 'models/profile';
 import { handleError } from 'errors/api-error';
+import { getFileStream, uploadFile, deleteFile } from 'assets/s3';
 
 export const getProfiles = async (req: Request, res: Response) => {
   try {
@@ -128,12 +127,15 @@ export const getCitiesList = async (req: Request, res: Response) => {
 
 export const addProfile = async (req: Request, res: Response) => {
   try {
-    const file = req.file?.filename || null;
+    let result;
+    if (req.file) {
+      result = await uploadFile(req.file);
+    }
 
     const profileToSave = new Profile({
       ...req.body,
       user: req.params.userId,
-      photo: file,
+      photo: result?.Key,
     });
 
     const profile = await profileToSave.save();
@@ -148,12 +150,13 @@ export const addProfile = async (req: Request, res: Response) => {
 
 export const changeProfileData = async (req: Request, res: Response) => {
   try {
-    const file = req.file?.filename || null;
+    let result;
 
-    if (file) {
-      req.body.photo = file;
+    if (req.file) {
+      result = await uploadFile(req.file);
+      req.body.photo = result?.Key;
       const oldProfile = await Profile.findById(req.params.profileId);
-      oldProfile?.photo && fs.unlinkSync(path.join(__dirname, '..', 'static', 'uploads', oldProfile.photo));
+      oldProfile?.photo && await deleteFile(oldProfile.photo);
     }
 
     const profile = await Profile.findByIdAndUpdate(req.params.profileId, req.body, { new: true });
@@ -168,10 +171,21 @@ export const deleteProfile = async (req: Request, res: Response) => {
     const profile = await Profile.findByIdAndDelete(req.params.profileId);
 
     if (profile?.photo) {
-      fs.unlinkSync(path.join(__dirname, '..', 'static', 'uploads', profile.photo));
+      await deleteFile(profile.photo);
     }
 
     res.status(200).json({ message: 'SUCCESS', profile });
+  } catch (err) {
+    return handleError(res, 500, err);
+  }
+};
+
+export const getImage = async (req: Request, res: Response) => {
+  try {
+    const key = req.params.key;
+    const readStream = getFileStream(key);
+
+    readStream.pipe(res);
   } catch (err) {
     return handleError(res, 500, err);
   }
