@@ -1,5 +1,5 @@
 import { CookieOptions, Request, Response } from 'express';
-var bcrypt = require('bcrypt');
+var bcrypt = require('bcryptjs');
 
 import User from 'models/user';
 import {
